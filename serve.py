@@ -8,7 +8,7 @@ def main(port: int = 8000) -> None:
     handler_class = partial(SimpleHTTPRequestHandler, directory=root)
     server = HTTPServer(("0.0.0.0", port), handler_class)
 
-    print(f"Serving {root} at http://localhost:{port}/index.html")
+    print(f"Serving {root} at http://localhost:{port}/public/index.html")
     try:
         server.serve_forever()
     except KeyboardInterrupt:

@@ -4,7 +4,8 @@ const path = require('path');
 
 const host = '0.0.0.0';
 const port = process.env.PORT || 8000;
-const root = process.cwd();
+const projectRoot = process.cwd();
+const publicRoot = path.join(projectRoot, 'public');
 
 const mimeTypes = {
   '.html': 'text/html; charset=utf-8',
@@ -51,12 +52,24 @@ async function serveFile(filePath, res) {
 
 function resolvePath(urlPath) {
   const decoded = decodeURIComponent(urlPath.split('?')[0]);
-  const normalized = path.normalize(decoded.replace(/\\\\|\\/g, '/'));
-  const fullPath = path.join(root, normalized);
-  if (!fullPath.startsWith(root)) {
-    return null;
+  const normalized = path.posix.normalize(decoded);
+
+  const sanitized = normalized.startsWith('/') ? normalized.slice(1) : normalized;
+  let relativePath = sanitized;
+
+  if (relativePath.startsWith('node_modules/')) {
+    const nodePath = path.join(projectRoot, relativePath);
+    return nodePath.startsWith(path.join(projectRoot, 'node_modules')) ? nodePath : null;
   }
-  return fullPath;
+
+  if (relativePath === 'public') {
+    relativePath = '';
+  } else if (relativePath.startsWith('public/')) {
+    relativePath = relativePath.slice('public/'.length);
+  }
+
+  const publicPath = path.join(publicRoot, relativePath);
+  return publicPath.startsWith(publicRoot) ? publicPath : null;
 }
 
 const server = http.createServer(async (req, res) => {
@@ -87,5 +100,5 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(port, host, () => {
-  console.log(`Server running at http://${host}:${port}/index.html`);
+  console.log(`Server running at http://${host}:${port}/`);
 });
