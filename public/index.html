@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FAB 장비 3D 모델 뷰어</title>
+  <link rel="stylesheet" href="./css/styles.css" />
+</head>
+<body>
+  <header>
+    <h1>
+      FAB 장비 3D 모델 뷰어
+      <span>FBX × 2</span>
+    </h1>
+  </header>
+  <section id="viewer">
+    <div id="canvas-container"></div>
+    <aside id="legend">
+      <h2>조작 방법</h2>
+      <ul>
+        <li>드래그: 모델 회전</li>
+        <li>휠/핀치: 확대 · 축소</li>
+        <li>Shift + 드래그: 이동(Pan)</li>
+      </ul>
+      <p style="margin-top:10px;">모델 파일: <code>ThinFilmDepositionSystem_01.fbx</code>, <code>ThinFilmDepositionSystem_02.fbx</code></p>
+    </aside>
+  </section>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "/node_modules/three/build/three.module.js",
+        "three/addons/": "/node_modules/three/examples/jsm/"
+      }
+    }
+  </script>
+  <script type="module" src="./js/main.js"></script>
+</body>
+</html>
