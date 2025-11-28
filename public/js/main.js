@@ -9,7 +9,8 @@ import {
   Scene,
   Vector2,
   Vector3,
-  WebGLRenderer
+  WebGLRenderer,
+  SRGBColorSpace
 } from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { FBXLoader } from "three/addons/loaders/FBXLoader.js";
@@ -19,7 +20,7 @@ import { OutlinePass } from "three/addons/postprocessing/OutlinePass.js";
 
 const container = document.getElementById("canvas-container");
 const scene = new Scene();
-scene.background = new Color("#0b1224");
+scene.background = new Color("#10192f");
 
 const camera = new PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 5000);
 camera.position.set(0, 220, 520);
@@ -28,6 +29,8 @@ const renderer = new WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.shadowMap.enabled = true;
+renderer.outputColorSpace = SRGBColorSpace;
+renderer.toneMappingExposure = 1.05;
 container.appendChild(renderer.domElement);
 
 const composer = new EffectComposer(renderer);
@@ -53,10 +56,10 @@ const controls = new OrbitControls(camera, renderer.domElement);
 controls.target.set(0, 80, 0);
 controls.enableDamping = true;
 
-const ambient = new AmbientLight(0xcad4e0, 0.6);
+const ambient = new AmbientLight(0xcad4e0, 0.85);
 scene.add(ambient);
 
-const directional = new DirectionalLight(0xffffff, 1.1);
+const directional = new DirectionalLight(0xffffff, 1.3);
 directional.position.set(300, 500, 400);
 directional.castShadow = true;
 directional.shadow.mapSize.set(2048, 2048);
