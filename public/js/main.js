@@ -3,10 +3,7 @@ import {
   Box3,
   Color,
   DirectionalLight,
-  EdgesGeometry,
   GridHelper,
-  LineBasicMaterial,
-  LineSegments,
   PerspectiveCamera,
   Raycaster,
   Scene,
@@ -52,21 +49,6 @@ const raycaster = new Raycaster();
 const pointer = new Vector2(1, 1);
 let hoveredMesh = null;
 
-function createOutline(mesh) {
-  if (!mesh.geometry) return null;
-
-  const edges = new EdgesGeometry(mesh.geometry, 1);
-  const outlineMaterial = new LineBasicMaterial({ color: 0x3b82f6 });
-  const outline = new LineSegments(edges, outlineMaterial);
-  outline.name = "hover-outline";
-  outline.renderOrder = 10;
-  outline.visible = false;
-  outline.castShadow = false;
-  outline.receiveShadow = false;
-
-  return outline;
-}
-
 function placeModel(object, offsetX) {
   // Rotate so the equipment lies flat on the grid instead of standing upright
   object.rotation.x = -Math.PI / 2;
@@ -78,11 +60,19 @@ function placeModel(object, offsetX) {
       child.receiveShadow = true;
       selectableMeshes.push(child);
 
-      const outline = createOutline(child);
-      if (outline) {
-        child.add(outline);
-        child.userData.outline = outline;
-      }
+      const materials = Array.isArray(child.material)
+        ? child.material
+        : [child.material];
+
+      child.userData.materialStates = materials.map((material) => {
+        if (!material) return null;
+        return {
+          material,
+          color: material.color?.clone?.(),
+          emissive: material.emissive?.clone?.(),
+          emissiveIntensity: material.emissiveIntensity
+        };
+      });
     }
   });
 
@@ -124,22 +114,48 @@ function loadFBX(path, offsetX) {
 loadFBX("../3D_model/ThinFilmDepositionSystem_01.fbx", -240);
 loadFBX("../3D_model/ThinFilmDepositionSystem_02.fbx", 240);
 
-function toggleOutline(mesh, visible) {
-  const outline = mesh?.userData?.outline;
-  if (outline) outline.visible = visible;
+function restoreMaterials(mesh) {
+  const states = mesh?.userData?.materialStates;
+  if (!states) return;
+
+  states.forEach((state) => {
+    if (!state || !state.material) return;
+    const { material, color, emissive, emissiveIntensity } = state;
+    if (color && material.color) material.color.copy(color);
+    if (emissive && material.emissive) material.emissive.copy(emissive);
+    if (typeof emissiveIntensity === "number") {
+      material.emissiveIntensity = emissiveIntensity;
+    }
+  });
+}
+
+function applyHighlight(mesh) {
+  const states = mesh?.userData?.materialStates;
+  if (!states) return;
+
+  states.forEach((state) => {
+    if (!state || !state.material) return;
+    const { material } = state;
+    if (material.emissive) {
+      material.emissive.setHex(0x2563eb);
+      material.emissiveIntensity = Math.max(material.emissiveIntensity ?? 0.6, 0.9);
+    } else if (material.color) {
+      material.color.offsetHSL(0, 0, 0.1);
+    }
+  });
 }
 
 function setHoveredMesh(mesh) {
   if (hoveredMesh === mesh) return;
 
   if (hoveredMesh) {
-    toggleOutline(hoveredMesh, false);
+    restoreMaterials(hoveredMesh);
   }
 
   hoveredMesh = mesh || null;
 
   if (hoveredMesh) {
-    toggleOutline(hoveredMesh, true);
+    applyHighlight(hoveredMesh);
   }
 }
 
