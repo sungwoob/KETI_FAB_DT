@@ -1,0 +1,92 @@
+:root {
+  color-scheme: light dark;
+}
+
+body {
+  margin: 0;
+  font-family: "Inter", "Noto Sans KR", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #0f172a;
+  color: #e2e8f0;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  padding: 16px 20px;
+  background: linear-gradient(90deg, #0b1021 0%, #111827 100%);
+  border-bottom: 1px solid #1e293b;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.35);
+  position: relative;
+  z-index: 2;
+}
+
+h1 {
+  margin: 0;
+  font-size: 1.25rem;
+  letter-spacing: 0.02em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+h1 span {
+  display: inline-flex;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: rgba(59, 130, 246, 0.12);
+  color: #bfdbfe;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border: 1px solid rgba(59, 130, 246, 0.35);
+}
+
+#viewer {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+}
+
+#canvas-container {
+  width: 100%;
+  height: 100%;
+}
+
+#legend {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(15, 23, 42, 0.82);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(6px);
+  max-width: 320px;
+  line-height: 1.45;
+  font-size: 0.9rem;
+  color: #cbd5e1;
+}
+
+#legend h2 {
+  margin: 0 0 8px;
+  font-size: 1rem;
+  color: #e2e8f0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#legend ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+#legend li + li {
+  margin-top: 4px;
+}
+
+a {
+  color: #93c5fd;
+}
