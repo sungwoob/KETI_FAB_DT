@@ -5,7 +5,9 @@ import {
   DirectionalLight,
   GridHelper,
   PerspectiveCamera,
+  Raycaster,
   Scene,
+  Vector2,
   Vector3,
   WebGLRenderer
 } from "three";
@@ -42,6 +44,10 @@ const grid = new GridHelper(1000, 20, 0x3b82f6, 0x1f2937);
 scene.add(grid);
 
 const loader = new FBXLoader();
+const selectableMeshes = [];
+const raycaster = new Raycaster();
+const pointer = new Vector2(1, 1);
+let hoveredMesh = null;
 
 function placeModel(object, offsetX) {
   // Rotate so the equipment lies flat on the grid instead of standing upright
@@ -52,6 +58,21 @@ function placeModel(object, offsetX) {
     if (child.isMesh) {
       child.castShadow = true;
       child.receiveShadow = true;
+      selectableMeshes.push(child);
+
+      const materials = Array.isArray(child.material)
+        ? child.material
+        : [child.material];
+
+      child.userData.materialStates = materials.map((material) => {
+        if (!material) return null;
+        return {
+          material,
+          color: material.color?.clone?.(),
+          emissive: material.emissive?.clone?.(),
+          emissiveIntensity: material.emissiveIntensity
+        };
+      });
     }
   });
 
@@ -93,6 +114,57 @@ function loadFBX(path, offsetX) {
 loadFBX("../3D_model/ThinFilmDepositionSystem_01.fbx", -240);
 loadFBX("../3D_model/ThinFilmDepositionSystem_02.fbx", 240);
 
+function restoreMaterials(mesh) {
+  const states = mesh?.userData?.materialStates;
+  if (!states) return;
+
+  states.forEach((state) => {
+    if (!state || !state.material) return;
+    const { material, color, emissive, emissiveIntensity } = state;
+    if (color && material.color) material.color.copy(color);
+    if (emissive && material.emissive) material.emissive.copy(emissive);
+    if (typeof emissiveIntensity === "number") {
+      material.emissiveIntensity = emissiveIntensity;
+    }
+  });
+}
+
+function applyHighlight(mesh) {
+  const states = mesh?.userData?.materialStates;
+  if (!states) return;
+
+  states.forEach((state) => {
+    if (!state || !state.material) return;
+    const { material } = state;
+    if (material.emissive) {
+      material.emissive.setHex(0x2563eb);
+      material.emissiveIntensity = Math.max(material.emissiveIntensity ?? 0.6, 0.9);
+    } else if (material.color) {
+      material.color.offsetHSL(0, 0, 0.1);
+    }
+  });
+}
+
+function setHoveredMesh(mesh) {
+  if (hoveredMesh === mesh) return;
+
+  if (hoveredMesh) {
+    restoreMaterials(hoveredMesh);
+  }
+
+  hoveredMesh = mesh || null;
+
+  if (hoveredMesh) {
+    applyHighlight(hoveredMesh);
+  }
+}
+
+function handlePointerMove(event) {
+  const bounds = renderer.domElement.getBoundingClientRect();
+  pointer.x = ((event.clientX - bounds.left) / bounds.width) * 2 - 1;
+  pointer.y = -((event.clientY - bounds.top) / bounds.height) * 2 + 1;
+}
+
 function onResize() {
   const { innerWidth, innerHeight } = window;
   camera.aspect = innerWidth / innerHeight;
@@ -101,9 +173,16 @@ function onResize() {
 }
 
 window.addEventListener("resize", onResize);
+window.addEventListener("pointermove", handlePointerMove);
+window.addEventListener("pointerleave", () => setHoveredMesh(null));
 
 function animate() {
   requestAnimationFrame(animate);
+
+  raycaster.setFromCamera(pointer, camera);
+  const intersects = raycaster.intersectObjects(selectableMeshes, true);
+  setHoveredMesh(intersects[0]?.object || null);
+
   controls.update();
   renderer.render(scene, camera);
 }
