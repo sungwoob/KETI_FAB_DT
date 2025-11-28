@@ -184,17 +184,21 @@
       const box = new Box3().setFromObject(object);
       const size = new Vector3();
       box.getSize(size);
-      const center = new Vector3();
-      box.getCenter(center);
 
       const targetSize = 280;
       const maxDim = Math.max(size.x, size.y, size.z);
       const scale = maxDim > 0 ? targetSize / maxDim : 1;
       object.scale.setScalar(scale);
 
-      object.position.sub(center.multiplyScalar(scale));
+      const centeredBox = new Box3().setFromObject(object);
+      const center = new Vector3();
+      centeredBox.getCenter(center);
+      object.position.sub(center);
+
+      const groundedBox = new Box3().setFromObject(object);
+      const minY = groundedBox.min.y;
+      object.position.y -= minY;
       object.position.x += offsetX;
-      object.position.y += size.y * 0.5;
 
       scene.add(object);
     }
