@@ -3,7 +3,10 @@ import {
   Box3,
   Color,
   DirectionalLight,
+  EdgesGeometry,
   GridHelper,
+  LineBasicMaterial,
+  LineSegments,
   PerspectiveCamera,
   Raycaster,
   Scene,
@@ -13,9 +16,6 @@ import {
 } from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { FBXLoader } from "three/addons/loaders/FBXLoader.js";
-import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
-import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
-import { OutlinePass } from "three/addons/postprocessing/OutlinePass.js";
 
 const container = document.getElementById("canvas-container");
 const scene = new Scene();
@@ -29,25 +29,6 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.shadowMap.enabled = true;
 container.appendChild(renderer.domElement);
-
-const composer = new EffectComposer(renderer);
-const renderPass = new RenderPass(scene, camera);
-composer.addPass(renderPass);
-
-const outlinePass = new OutlinePass(
-  new Vector2(window.innerWidth, window.innerHeight),
-  scene,
-  camera,
-  []
-);
-outlinePass.visibleEdgeColor.set(0x3b82f6);
-outlinePass.hiddenEdgeColor.set(0x000000);
-outlinePass.edgeStrength = 5;
-outlinePass.edgeGlow = 0;
-outlinePass.edgeThickness = 1;
-outlinePass.pulsePeriod = 0;
-outlinePass.usePatternTexture = false;
-composer.addPass(outlinePass);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.target.set(0, 80, 0);
@@ -71,6 +52,21 @@ const raycaster = new Raycaster();
 const pointer = new Vector2(1, 1);
 let hoveredMesh = null;
 
+function createOutline(mesh) {
+  if (!mesh.geometry) return null;
+
+  const edges = new EdgesGeometry(mesh.geometry, 1);
+  const outlineMaterial = new LineBasicMaterial({ color: 0x3b82f6 });
+  const outline = new LineSegments(edges, outlineMaterial);
+  outline.name = "hover-outline";
+  outline.renderOrder = 10;
+  outline.visible = false;
+  outline.castShadow = false;
+  outline.receiveShadow = false;
+
+  return outline;
+}
+
 function placeModel(object, offsetX) {
   // Rotate so the equipment lies flat on the grid instead of standing upright
   object.rotation.x = -Math.PI / 2;
@@ -81,6 +77,12 @@ function placeModel(object, offsetX) {
       child.castShadow = true;
       child.receiveShadow = true;
       selectableMeshes.push(child);
+
+      const outline = createOutline(child);
+      if (outline) {
+        child.add(outline);
+        child.userData.outline = outline;
+      }
     }
   });
 
@@ -122,12 +124,23 @@ function loadFBX(path, offsetX) {
 loadFBX("../3D_model/ThinFilmDepositionSystem_01.fbx", -240);
 loadFBX("../3D_model/ThinFilmDepositionSystem_02.fbx", 240);
 
+function toggleOutline(mesh, visible) {
+  const outline = mesh?.userData?.outline;
+  if (outline) outline.visible = visible;
+}
+
 function setHoveredMesh(mesh) {
   if (hoveredMesh === mesh) return;
 
+  if (hoveredMesh) {
+    toggleOutline(hoveredMesh, false);
+  }
+
   hoveredMesh = mesh || null;
 
-  outlinePass.selectedObjects = hoveredMesh ? [hoveredMesh] : [];
+  if (hoveredMesh) {
+    toggleOutline(hoveredMesh, true);
+  }
 }
 
 function handlePointerMove(event) {
@@ -141,7 +154,6 @@ function onResize() {
   camera.aspect = innerWidth / innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(innerWidth, innerHeight);
-  composer.setSize(innerWidth, innerHeight);
 }
 
 window.addEventListener("resize", onResize);
@@ -156,7 +168,7 @@ function animate() {
   setHoveredMesh(intersects[0]?.object || null);
 
   controls.update();
-  composer.render();
+  renderer.render(scene, camera);
 }
 
 animate();
