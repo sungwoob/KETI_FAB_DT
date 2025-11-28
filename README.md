@@ -7,6 +7,10 @@ Three.js 기반의 단일 페이지에서 FAB 장비 FBX 모델(2종)을 시각�
    ```bash
    python -m http.server 8000
    ```
+   혹은 제공된 스크립트로 실행합니다.
+   ```bash
+   python serve.py
+   ```
 2. 브라우저에서 `http://localhost:8000/index.html`을 열어 모델을 확인합니다.
 
 모델 파일은 `3D_model/ThinFilmDepositionSystem_01.fbx`, `3D_model/ThinFilmDepositionSystem_02.fbx` 경로에 위치합니다.
