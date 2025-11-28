@@ -1,0 +1,16 @@
+{
+  "name": "keti-fab-dt-viewer",
+  "version": "1.0.0",
+  "description": "Static server for the FAB 3D model viewer",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [
+    "threejs",
+    "fbx",
+    "viewer"
+  ],
+  "author": "",
+  "license": "MIT"
+}
