@@ -174,7 +174,9 @@
     const loader = new FBXLoader();
 
     function placeModel(object, offsetX) {
+      // Rotate so the equipment lies flat on the grid instead of standing upright
       object.rotation.x = -Math.PI / 2;
+      object.rotation.z = -Math.PI / 2;
 
       object.traverse((child) => {
         if (child.isMesh) {
