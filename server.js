@@ -2,7 +2,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
-const host = '0.0.0.0';
+const host = process.env.HOST || '0.0.0.0';
 const port = process.env.PORT || 8000;
 const projectRoot = process.cwd();
 const publicRoot = path.join(projectRoot, 'public');
