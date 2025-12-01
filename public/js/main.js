@@ -9,14 +9,18 @@ import {
   Scene,
   Vector2,
   Vector3,
-  WebGLRenderer
+  WebGLRenderer,
+  SRGBColorSpace
 } from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { FBXLoader } from "three/addons/loaders/FBXLoader.js";
+import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
+import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
+import { OutlinePass } from "three/addons/postprocessing/OutlinePass.js";
 
 const container = document.getElementById("canvas-container");
 const scene = new Scene();
-scene.background = new Color("#0b1224");
+scene.background = new Color("#10192f");
 
 const camera = new PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 5000);
 camera.position.set(0, 220, 520);
@@ -25,16 +29,34 @@ const renderer = new WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.shadowMap.enabled = true;
+renderer.outputColorSpace = SRGBColorSpace;
+renderer.toneMappingExposure = 1.05;
 container.appendChild(renderer.domElement);
+
+const composer = new EffectComposer(renderer);
+const renderPass = new RenderPass(scene, camera);
+composer.addPass(renderPass);
+
+const outlinePass = new OutlinePass(
+  new Vector2(window.innerWidth, window.innerHeight),
+  scene,
+  camera
+);
+outlinePass.edgeStrength = 3.5;
+outlinePass.edgeGlow = 0.0;
+outlinePass.edgeThickness = 1.0;
+outlinePass.visibleEdgeColor.set("#4ea1ff");
+outlinePass.hiddenEdgeColor.set("#000000");
+composer.addPass(outlinePass);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.target.set(0, 80, 0);
 controls.enableDamping = true;
 
-const ambient = new AmbientLight(0xcad4e0, 0.6);
+const ambient = new AmbientLight(0xcad4e0, 0.85);
 scene.add(ambient);
 
-const directional = new DirectionalLight(0xffffff, 1.1);
+const directional = new DirectionalLight(0xffffff, 1.3);
 directional.position.set(300, 500, 400);
 directional.castShadow = true;
 directional.shadow.mapSize.set(2048, 2048);
@@ -59,20 +81,6 @@ function placeModel(object, offsetX) {
       child.castShadow = true;
       child.receiveShadow = true;
       selectableMeshes.push(child);
-
-      const materials = Array.isArray(child.material)
-        ? child.material
-        : [child.material];
-
-      child.userData.materialStates = materials.map((material) => {
-        if (!material) return null;
-        return {
-          material,
-          color: material.color?.clone?.(),
-          emissive: material.emissive?.clone?.(),
-          emissiveIntensity: material.emissiveIntensity
-        };
-      });
     }
   });
 
@@ -114,49 +122,11 @@ function loadFBX(path, offsetX) {
 loadFBX("../3D_model/ThinFilmDepositionSystem_01.fbx", -240);
 loadFBX("../3D_model/ThinFilmDepositionSystem_02.fbx", 240);
 
-function restoreMaterials(mesh) {
-  const states = mesh?.userData?.materialStates;
-  if (!states) return;
-
-  states.forEach((state) => {
-    if (!state || !state.material) return;
-    const { material, color, emissive, emissiveIntensity } = state;
-    if (color && material.color) material.color.copy(color);
-    if (emissive && material.emissive) material.emissive.copy(emissive);
-    if (typeof emissiveIntensity === "number") {
-      material.emissiveIntensity = emissiveIntensity;
-    }
-  });
-}
-
-function applyHighlight(mesh) {
-  const states = mesh?.userData?.materialStates;
-  if (!states) return;
-
-  states.forEach((state) => {
-    if (!state || !state.material) return;
-    const { material } = state;
-    if (material.emissive) {
-      material.emissive.setHex(0x2563eb);
-      material.emissiveIntensity = Math.max(material.emissiveIntensity ?? 0.6, 0.9);
-    } else if (material.color) {
-      material.color.offsetHSL(0, 0, 0.1);
-    }
-  });
-}
-
 function setHoveredMesh(mesh) {
   if (hoveredMesh === mesh) return;
 
-  if (hoveredMesh) {
-    restoreMaterials(hoveredMesh);
-  }
-
   hoveredMesh = mesh || null;
-
-  if (hoveredMesh) {
-    applyHighlight(hoveredMesh);
-  }
+  outlinePass.selectedObjects = hoveredMesh ? [hoveredMesh] : [];
 }
 
 function handlePointerMove(event) {
@@ -170,6 +140,8 @@ function onResize() {
   camera.aspect = innerWidth / innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(innerWidth, innerHeight);
+  composer.setSize(innerWidth, innerHeight);
+  outlinePass.setSize(innerWidth, innerHeight);
 }
 
 window.addEventListener("resize", onResize);
@@ -184,7 +156,7 @@ function animate() {
   setHoveredMesh(intersects[0]?.object || null);
 
   controls.update();
-  renderer.render(scene, camera);
+  composer.render();
 }
 
 animate();
