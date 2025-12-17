@@ -55,6 +55,148 @@ const animationMixers = [];
 
 const clock = new Clock();
 
+const modelRootPath = "./3D_model/FAB/";
+const defaultFbxModels = [
+  {
+    assetId: "CAM-01",
+    name: "Contact Angle Meter",
+    fileName: "ContactAngleMeter_01.fbx",
+    location: { gridPosition: 0 },
+    dimensions: { width: 2.6, height: 2.2, depth: 2.4 },
+    status: "on"
+  },
+  {
+    assetId: "CMM-01",
+    name: "Coordinate Measuring Machine",
+    fileName: "CoordinateMeasuringMachine_01.fbx",
+    location: { gridPosition: 1 },
+    dimensions: { width: 2.8, height: 2.0, depth: 2.4 },
+    status: "on"
+  },
+  {
+    assetId: "EVAP-01",
+    name: "Evaporator",
+    fileName: "Evaporator_01.fbx",
+    location: { gridPosition: 2 },
+    dimensions: { width: 3.0, height: 2.6, depth: 2.8 },
+    status: "off"
+  },
+  {
+    assetId: "OVEN-01",
+    name: "Forced Convection Oven",
+    fileName: "ForcedConvectionOven_01.fbx",
+    location: { gridPosition: 3 },
+    dimensions: { width: 2.4, height: 2.2, depth: 2.6 },
+    status: "on"
+  },
+  {
+    assetId: "MICRO-01",
+    name: "Optical Microscope",
+    fileName: "OpticalMicroscope_01.fbx",
+    location: { gridPosition: 4 },
+    dimensions: { width: 2.0, height: 2.0, depth: 2.0 },
+    status: "on"
+  },
+  {
+    assetId: "TFD-01",
+    name: "Thin Film Deposition System A",
+    fileName: "ThinFilmDepositionSystem_01.fbx",
+    location: { gridPosition: 5 },
+    dimensions: { width: 3.2, height: 2.6, depth: 2.8 },
+    status: "off"
+  },
+  {
+    assetId: "TFD-02",
+    name: "Thin Film Deposition System B",
+    fileName: "ThinFilmDepositionSystem_02.fbx",
+    location: { gridPosition: 6 },
+    dimensions: { width: 3.2, height: 2.6, depth: 2.8 },
+    status: "off"
+  },
+  {
+    assetId: "UVC-01",
+    name: "Ultraviolet Cleaner",
+    fileName: "UltravioletCleaner_01.fbx",
+    location: { gridPosition: 7 },
+    dimensions: { width: 2.4, height: 2.2, depth: 2.4 },
+    status: "on"
+  }
+];
+
+async function fetchModelMetadata() {
+  try {
+    const response = await fetch("./vitualModel/fab_models.yaml");
+    if (!response.ok) throw new Error(`Failed to fetch metadata: ${response.status}`);
+    const yamlText = await response.text();
+    const parsed = JSON.parse(yamlText);
+    if (Array.isArray(parsed?.models)) {
+      return parsed.models.map((model, index) => ({
+        assetId: model.asset_id,
+        name: model.name,
+        fileName: model.file,
+        location: model.location || { gridPosition: index },
+        dimensions: model.dimensions,
+        status: model.status || "unknown"
+      }));
+    }
+  } catch (error) {
+    console.warn("Using built-in model metadata due to error:", error);
+  }
+
+  return defaultFbxModels;
+}
+
+function getGridPosition(index, columnCount, spacingX, spacingZ, rowCount) {
+  const row = Math.floor(index / columnCount);
+  const column = index % columnCount;
+
+  const offsetX = (column - (columnCount - 1) / 2) * spacingX;
+  const offsetZ = (row - (rowCount - 1) / 2) * spacingZ;
+
+  return { offsetX, offsetZ };
+}
+
+async function initModels() {
+  const modelNamesList = document.getElementById("model-names");
+  const countBadge = document.querySelector("header h1 span");
+
+  const models = await fetchModelMetadata();
+
+  const columnCount = 3;
+  const spacingX = 360;
+  const spacingZ = 340;
+  const rowCount = Math.ceil(models.length / columnCount);
+
+  if (countBadge) {
+    countBadge.textContent = `FBX × ${models.length}`;
+  }
+
+  if (modelNamesList) {
+    modelNamesList.innerHTML = "";
+    models.forEach((model) => {
+      const item = document.createElement("li");
+      const statusLabel = model.status ? ` (${model.status.toUpperCase()})` : "";
+      item.textContent = `${model.assetId || model.fileName}: ${model.name || model.fileName}${statusLabel}`;
+      modelNamesList.appendChild(item);
+    });
+  }
+
+  models.forEach((model, index) => {
+    const locationPosition = model?.location?.position;
+    const { offsetX, offsetZ } = locationPosition
+      ? { offsetX: locationPosition.x ?? 0, offsetZ: locationPosition.z ?? 0 }
+      : getGridPosition(
+          model?.location?.gridPosition ?? index,
+          columnCount,
+          spacingX,
+          spacingZ,
+          rowCount
+        );
+
+    loadFBX(`${modelRootPath}${model.fileName}`, offsetX, offsetZ);
+  });
+}
+
 function placeModel(object, offsetX, offsetZ) {
   const animations = object.animations || [];
   const mixer = animations.length > 0 ? new AnimationMixer(object) : null;
@@ -130,48 +272,6 @@ function loadFBX(path, offsetX, offsetZ) {
       console.error(`Failed to load ${path}:`, error);
     }
   );
-}
-
-const fbxModels = [
-  "ContactAngleMeter_01.fbx",
-  "CoordinateMeasuringMachine_01.fbx",
-  "Evaporator_01.fbx",
-  "ForcedConvectionOven_01.fbx",
-  "OpticalMicroscope_01.fbx",
-  "ThinFilmDepositionSystem_01.fbx",
-  "ThinFilmDepositionSystem_02.fbx",
-  "UltravioletCleaner_01.fbx"
-];
-
-const columnCount = 3;
-const spacingX = 360;
-const spacingZ = 340;
-const rowCount = Math.ceil(fbxModels.length / columnCount);
-const modelRootPath = "./3D_model/FAB/";
-
-fbxModels.forEach((fileName, index) => {
-  const row = Math.floor(index / columnCount);
-  const column = index % columnCount;
-
-  const offsetX = (column - (columnCount - 1) / 2) * spacingX;
-  const offsetZ = (row - (rowCount - 1) / 2) * spacingZ;
-
-  loadFBX(`${modelRootPath}${fileName}`, offsetX, offsetZ);
-});
-
-const modelNamesList = document.getElementById("model-names");
-const countBadge = document.querySelector("header h1 span");
-
-if (countBadge) {
-  countBadge.textContent = `FBX × ${fbxModels.length}`;
-}
-
-if (modelNamesList) {
-  fbxModels.forEach((fileName) => {
-    const item = document.createElement("li");
-    item.textContent = fileName;
-    modelNamesList.appendChild(item);
-  });
 }
 
 function restoreMaterials(mesh) {
@@ -260,6 +360,8 @@ function handleClick(event) {
 }
 
 window.addEventListener("click", handleClick);
+
+initModels();
 
 function animate() {
   requestAnimationFrame(animate);
