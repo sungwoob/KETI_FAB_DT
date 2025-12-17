@@ -1,0 +1,100 @@
+{
+  "models": [
+    {
+      "asset_id": "CAM-01",
+      "name": "Contact Angle Meter",
+      "file": "ContactAngleMeter_01.fbx",
+      "equipment_info": "Contact angle measurement system for surface wettability",
+      "location": {
+        "zone": "B1",
+        "position": { "x": -4, "y": 0, "z": -4 }
+      },
+      "dimensions": { "length": 2.6, "width": 2.4, "height": 2.2 },
+      "status": "on"
+    },
+    {
+      "asset_id": "CMM-01",
+      "name": "Coordinate Measuring Machine",
+      "file": "CoordinateMeasuringMachine_01.fbx",
+      "equipment_info": "High-precision dimensional inspection system",
+      "location": {
+        "zone": "B2",
+        "position": { "x": 0, "y": 0, "z": -4 }
+      },
+      "dimensions": { "length": 2.8, "width": 2.4, "height": 2.0 },
+      "status": "on"
+    },
+    {
+      "asset_id": "EVAP-01",
+      "name": "Evaporator",
+      "file": "Evaporator_01.fbx",
+      "equipment_info": "Thermal evaporation thin-film coater",
+      "location": {
+        "zone": "B3",
+        "position": { "x": 4, "y": 0, "z": -4 }
+      },
+      "dimensions": { "length": 3.0, "width": 2.8, "height": 2.6 },
+      "status": "off"
+    },
+    {
+      "asset_id": "OVEN-01",
+      "name": "Forced Convection Oven",
+      "file": "ForcedConvectionOven_01.fbx",
+      "equipment_info": "Uniform heating oven for wafer/process samples",
+      "location": {
+        "zone": "C1",
+        "position": { "x": -4, "y": 0, "z": 0 }
+      },
+      "dimensions": { "length": 2.4, "width": 2.6, "height": 2.2 },
+      "status": "on"
+    },
+    {
+      "asset_id": "MICRO-01",
+      "name": "Optical Microscope",
+      "file": "OpticalMicroscope_01.fbx",
+      "equipment_info": "High-magnification optical inspection",
+      "location": {
+        "zone": "C2",
+        "position": { "x": 0, "y": 0, "z": 0 }
+      },
+      "dimensions": { "length": 2.0, "width": 2.0, "height": 2.0 },
+      "status": "on"
+    },
+    {
+      "asset_id": "TFD-01",
+      "name": "Thin Film Deposition System A",
+      "file": "ThinFilmDepositionSystem_01.fbx",
+      "equipment_info": "Multi-chamber deposition tool",
+      "location": {
+        "zone": "C3",
+        "position": { "x": 4, "y": 0, "z": 0 }
+      },
+      "dimensions": { "length": 3.2, "width": 2.8, "height": 2.6 },
+      "status": "off"
+    },
+    {
+      "asset_id": "TFD-02",
+      "name": "Thin Film Deposition System B",
+      "file": "ThinFilmDepositionSystem_02.fbx",
+      "equipment_info": "Secondary chamber for deposition",
+      "location": {
+        "zone": "D1",
+        "position": { "x": -2, "y": 0, "z": 4 }
+      },
+      "dimensions": { "length": 3.2, "width": 2.8, "height": 2.6 },
+      "status": "off"
+    },
+    {
+      "asset_id": "UVC-01",
+      "name": "Ultraviolet Cleaner",
+      "file": "UltravioletCleaner_01.fbx",
+      "equipment_info": "UV surface cleaner",
+      "location": {
+        "zone": "D2",
+        "position": { "x": 2, "y": 0, "z": 4 }
+      },
+      "dimensions": { "length": 2.4, "width": 2.4, "height": 2.2 },
+      "status": "on"
+    }
+  ]
+}
