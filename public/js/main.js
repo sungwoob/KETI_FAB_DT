@@ -49,10 +49,9 @@ const raycaster = new Raycaster();
 const pointer = new Vector2(1, 1);
 let hoveredMesh = null;
 
-function placeModel(object, offsetX) {
+function placeModel(object, offsetX, offsetZ) {
   // Rotate so the equipment lies flat on the grid instead of standing upright
-  object.rotation.x = -Math.PI / 2;
-  object.rotation.z = -Math.PI / 2;
+  object.rotation.set(-Math.PI / 2, 0, 0);
 
   object.traverse((child) => {
     if (child.isMesh) {
@@ -80,7 +79,7 @@ function placeModel(object, offsetX) {
   const size = new Vector3();
   box.getSize(size);
 
-  const targetSize = 280;
+  const targetSize = 260;
   const maxDim = Math.max(size.x, size.y, size.z);
   const scale = maxDim > 0 ? targetSize / maxDim : 1;
   object.scale.setScalar(scale);
@@ -94,15 +93,16 @@ function placeModel(object, offsetX) {
   const minY = groundedBox.min.y;
   object.position.y -= minY;
   object.position.x += offsetX;
+  object.position.z += offsetZ;
 
   scene.add(object);
 }
 
-function loadFBX(path, offsetX) {
+function loadFBX(path, offsetX, offsetZ) {
   loader.load(
     path,
     (object) => {
-      placeModel(object, offsetX);
+      placeModel(object, offsetX, offsetZ);
     },
     undefined,
     (error) => {
@@ -111,8 +111,47 @@ function loadFBX(path, offsetX) {
   );
 }
 
-loadFBX("../3D_model/ThinFilmDepositionSystem_01.fbx", -240);
-loadFBX("../3D_model/ThinFilmDepositionSystem_02.fbx", 240);
+const fbxModels = [
+  "ContactAngleMeter_01.fbx",
+  "CoordinateMeasuringMachine_01.fbx",
+  "Evaporator_01.fbx",
+  "ForcedConvectionOven_01.fbx",
+  "OpticalMicroscope_01.fbx",
+  "ThinFilmDepositionSystem_01.fbx",
+  "ThinFilmDepositionSystem_02.fbx",
+  "UltravioletCleaner_01.fbx"
+];
+
+const columnCount = 3;
+const spacingX = 360;
+const spacingZ = 340;
+const rowCount = Math.ceil(fbxModels.length / columnCount);
+const modelRootPath = "./3D_model/FAB/";
+
+fbxModels.forEach((fileName, index) => {
+  const row = Math.floor(index / columnCount);
+  const column = index % columnCount;
+
+  const offsetX = (column - (columnCount - 1) / 2) * spacingX;
+  const offsetZ = (row - (rowCount - 1) / 2) * spacingZ;
+
+  loadFBX(`${modelRootPath}${fileName}`, offsetX, offsetZ);
+});
+
+const modelNamesList = document.getElementById("model-names");
+const countBadge = document.querySelector("header h1 span");
+
+if (countBadge) {
+  countBadge.textContent = `FBX × ${fbxModels.length}`;
+}
+
+if (modelNamesList) {
+  fbxModels.forEach((fileName) => {
+    const item = document.createElement("li");
+    item.textContent = fileName;
+    modelNamesList.appendChild(item);
+  });
+}
 
 function restoreMaterials(mesh) {
   const states = mesh?.userData?.materialStates;
