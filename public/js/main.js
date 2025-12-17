@@ -59,6 +59,17 @@ const pointer = new Vector2(1, 1);
 let hoveredMesh = null;
 const animationMixers = [];
 
+const infoPanel = document.getElementById("info-panel");
+const infoCloseButton = document.getElementById("info-close");
+const infoFields = {
+  asset: document.getElementById("info-asset"),
+  name: document.getElementById("info-name"),
+  equipment: document.getElementById("info-equipment"),
+  status: document.getElementById("info-status"),
+  location: document.getElementById("info-location"),
+  dimensions: document.getElementById("info-dimensions")
+};
+
 const clock = new Clock();
 
 const modelRootPath = "./3D_model/FAB/";
@@ -67,6 +78,7 @@ const defaultFbxModels = [
     assetId: "CAM-01",
     name: "Contact Angle Meter",
     fileName: "ContactAngleMeter_01.fbx",
+    equipmentInfo: "Contact angle measurement system for surface wettability",
     location: { gridPosition: 0 },
     dimensions: { length: 260, width: 240, height: 220 },
     status: "on"
@@ -75,6 +87,7 @@ const defaultFbxModels = [
     assetId: "CMM-01",
     name: "Coordinate Measuring Machine",
     fileName: "CoordinateMeasuringMachine_01.fbx",
+    equipmentInfo: "High-precision dimensional inspection system",
     location: { gridPosition: 1 },
     dimensions: { length: 280, width: 240, height: 200 },
     status: "on"
@@ -83,6 +96,7 @@ const defaultFbxModels = [
     assetId: "EVAP-01",
     name: "Evaporator",
     fileName: "Evaporator_01.fbx",
+    equipmentInfo: "Thermal evaporation thin-film coater",
     location: { gridPosition: 2 },
     dimensions: { length: 300, width: 280, height: 260 },
     status: "off"
@@ -91,6 +105,7 @@ const defaultFbxModels = [
     assetId: "OVEN-01",
     name: "Forced Convection Oven",
     fileName: "ForcedConvectionOven_01.fbx",
+    equipmentInfo: "Uniform heating oven for wafer/process samples",
     location: { gridPosition: 3 },
     dimensions: { length: 240, width: 260, height: 220 },
     status: "on"
@@ -99,6 +114,7 @@ const defaultFbxModels = [
     assetId: "MICRO-01",
     name: "Optical Microscope",
     fileName: "OpticalMicroscope_01.fbx",
+    equipmentInfo: "High-magnification optical inspection",
     location: { gridPosition: 4 },
     dimensions: { length: 200, width: 200, height: 200 },
     status: "on"
@@ -107,6 +123,7 @@ const defaultFbxModels = [
     assetId: "TFD-01",
     name: "Thin Film Deposition System A",
     fileName: "ThinFilmDepositionSystem_01.fbx",
+    equipmentInfo: "Multi-chamber deposition tool",
     location: { gridPosition: 5 },
     dimensions: { length: 320, width: 280, height: 260 },
     status: "off"
@@ -115,6 +132,7 @@ const defaultFbxModels = [
     assetId: "TFD-02",
     name: "Thin Film Deposition System B",
     fileName: "ThinFilmDepositionSystem_02.fbx",
+    equipmentInfo: "Secondary chamber for deposition",
     location: { gridPosition: 6 },
     dimensions: { length: 320, width: 280, height: 260 },
     status: "off"
@@ -123,6 +141,7 @@ const defaultFbxModels = [
     assetId: "UVC-01",
     name: "Ultraviolet Cleaner",
     fileName: "UltravioletCleaner_01.fbx",
+    equipmentInfo: "UV surface cleaner",
     location: { gridPosition: 7 },
     dimensions: { length: 240, width: 240, height: 220 },
     status: "on"
@@ -157,6 +176,7 @@ async function fetchModelMetadata() {
         assetId: model.asset_id,
         name: model.name,
         fileName: model.file,
+        equipmentInfo: model.equipment_info,
         location: model.location || { gridPosition: index },
         dimensions: normalizeDimensions(model.dimensions),
         status: model.status || "unknown"
@@ -218,10 +238,13 @@ async function initModels() {
 
     const offsetY = locationPosition?.y ?? 0;
 
-    loadFBX(`${modelRootPath}${model.fileName}`, {
+    const placement = {
       position: { x: offsetX, y: offsetY, z: offsetZ },
-      dimensions: model.dimensions
-    });
+      dimensions: model.dimensions,
+      metadata: model
+    };
+
+    loadFBX(`${modelRootPath}${model.fileName}`, placement);
   });
 }
 
@@ -297,7 +320,7 @@ function placeModel(object, placement) {
   const rawSize = new Vector3();
   initialBox.getSize(rawSize);
 
-  const { position, dimensions } = placement || {};
+  const { position, dimensions, metadata } = placement || {};
   const scale = computeScale(rawSize, dimensions);
   object.scale.set(scale.x, scale.y, scale.z);
 
@@ -312,6 +335,14 @@ function placeModel(object, placement) {
   object.position.x += position?.x ?? 0;
   object.position.y += position?.y ?? 0;
   object.position.z += position?.z ?? 0;
+
+  if (metadata) {
+    object.traverse((child) => {
+      if (child.isMesh) {
+        child.userData.metadata = metadata;
+      }
+    });
+  }
 
   scene.add(object);
 }
@@ -374,6 +405,52 @@ function setHoveredMesh(mesh) {
   }
 }
 
+function formatLocationText(metadata) {
+  const zone = metadata?.location?.zone ? `Zone ${metadata.location.zone}` : null;
+  const pos = metadata?.location?.position;
+  const coords = pos
+    ? `(${pos.x ?? 0}, ${pos.y ?? 0}, ${pos.z ?? 0})`
+    : null;
+
+  if (zone && coords) return `${zone} · ${coords}`;
+  if (zone) return zone;
+  if (coords) return coords;
+  return "-";
+}
+
+function formatDimensionsText(metadata) {
+  const dims = metadata?.dimensions;
+  if (!dims) return "-";
+  const { length, width, height } = dims;
+  const entries = [
+    length != null ? `L ${length} cm` : null,
+    width != null ? `W ${width} cm` : null,
+    height != null ? `H ${height} cm` : null
+  ].filter(Boolean);
+
+  return entries.length > 0 ? entries.join(" · ") : "-";
+}
+
+function showInfo(metadata) {
+  if (!infoPanel || !metadata) return;
+
+  if (infoFields.asset) infoFields.asset.textContent = metadata.assetId || "-";
+  if (infoFields.name) infoFields.name.textContent = metadata.name || "-";
+  if (infoFields.equipment)
+    infoFields.equipment.textContent = metadata.equipmentInfo || "-";
+  if (infoFields.status) infoFields.status.textContent = metadata.status || "unknown";
+  if (infoFields.location) infoFields.location.textContent = formatLocationText(metadata);
+  if (infoFields.dimensions) infoFields.dimensions.textContent = formatDimensionsText(metadata);
+
+  infoPanel.classList.remove("hidden");
+}
+
+function hideInfo() {
+  if (infoPanel) {
+    infoPanel.classList.add("hidden");
+  }
+}
+
 function handlePointerMove(event) {
   const bounds = renderer.domElement.getBoundingClientRect();
   pointer.x = ((event.clientX - bounds.left) / bounds.width) * 2 - 1;
@@ -391,15 +468,6 @@ window.addEventListener("resize", onResize);
 window.addEventListener("pointermove", handlePointerMove);
 window.addEventListener("pointerleave", () => setHoveredMesh(null));
 
-function playMeshAnimation(mesh) {
-  const action = mesh?.userData?.animationAction;
-  if (!action) return;
-
-  action.reset();
-  action.paused = false;
-  action.play();
-}
-
 function handleClick(event) {
   const bounds = renderer.domElement.getBoundingClientRect();
   pointer.x = ((event.clientX - bounds.left) / bounds.width) * 2 - 1;
@@ -409,12 +477,18 @@ function handleClick(event) {
   const intersects = raycaster.intersectObjects(selectableMeshes, true);
   const targetMesh = intersects[0]?.object;
 
-  if (targetMesh) {
-    playMeshAnimation(targetMesh);
+  if (targetMesh && targetMesh.userData?.metadata) {
+    showInfo(targetMesh.userData.metadata);
+  } else {
+    hideInfo();
   }
 }
 
 window.addEventListener("click", handleClick);
+
+if (infoCloseButton) {
+  infoCloseButton.addEventListener("click", hideInfo);
+}
 
 initModels();
 

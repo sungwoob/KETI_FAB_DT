@@ -53,6 +53,73 @@ h1 span {
   height: 100%;
 }
 
+#info-panel {
+  position: absolute;
+  left: 20px;
+  top: 20px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(6px);
+  max-width: 320px;
+  line-height: 1.45;
+  font-size: 0.9rem;
+  color: #cbd5e1;
+  display: grid;
+  gap: 8px;
+}
+
+#info-panel.hidden {
+  display: none;
+}
+
+#info-panel h3 {
+  margin: 0;
+  font-size: 1rem;
+  color: #e2e8f0;
+}
+
+#info-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  border: none;
+  background: rgba(15, 23, 42, 0.6);
+  color: #e2e8f0;
+  cursor: pointer;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  font-size: 1.1rem;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+#info-close:hover {
+  background: rgba(59, 130, 246, 0.2);
+  transform: scale(1.05);
+}
+
+#info-panel dl {
+  margin: 0;
+  display: grid;
+  gap: 8px;
+}
+
+#info-panel dt {
+  font-weight: 600;
+  color: #c7d2fe;
+  margin-bottom: 2px;
+  font-size: 0.88rem;
+}
+
+#info-panel dd {
+  margin: 0;
+  color: #e2e8f0;
+  word-break: keep-all;
+}
+
 #legend {
   position: absolute;
   right: 20px;

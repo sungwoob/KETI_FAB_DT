@@ -15,6 +15,36 @@
   </header>
   <section id="viewer">
     <div id="canvas-container"></div>
+    <div id="info-panel" class="hidden">
+      <button id="info-close" aria-label="정보 창 닫기">×</button>
+      <h3>장비 정보</h3>
+      <dl>
+        <div>
+          <dt>Asset ID</dt>
+          <dd id="info-asset"></dd>
+        </div>
+        <div>
+          <dt>장비명</dt>
+          <dd id="info-name"></dd>
+        </div>
+        <div>
+          <dt>장비 설명</dt>
+          <dd id="info-equipment"></dd>
+        </div>
+        <div>
+          <dt>상태</dt>
+          <dd id="info-status"></dd>
+        </div>
+        <div>
+          <dt>위치</dt>
+          <dd id="info-location"></dd>
+        </div>
+        <div>
+          <dt>크기</dt>
+          <dd id="info-dimensions"></dd>
+        </div>
+      </dl>
+    </div>
     <aside id="legend">
       <h2>조작 방법</h2>
       <ul>
