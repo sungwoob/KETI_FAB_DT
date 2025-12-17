@@ -21,8 +21,14 @@ const container = document.getElementById("canvas-container");
 const scene = new Scene();
 scene.background = new Color("#0b1224");
 
+const gridSize = 20;
+const gridDivisions = 20;
+const gridDistanceMultiplier = 52;
+const gridHeightMultiplier = 22;
+const targetHeightMultiplier = 8;
+
 const camera = new PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 5000);
-camera.position.set(0, 220, 520);
+camera.position.set(0, gridSize * gridHeightMultiplier, gridSize * gridDistanceMultiplier);
 
 const renderer = new WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -31,7 +37,7 @@ renderer.shadowMap.enabled = true;
 container.appendChild(renderer.domElement);
 
 const controls = new OrbitControls(camera, renderer.domElement);
-controls.target.set(0, 80, 0);
+controls.target.set(0, gridSize * targetHeightMultiplier, 0);
 controls.enableDamping = true;
 
 const ambient = new AmbientLight(0xcad4e0, 0.6);
@@ -43,8 +49,6 @@ directional.castShadow = true;
 directional.shadow.mapSize.set(2048, 2048);
 scene.add(directional);
 
-const gridSize = 10;
-const gridDivisions = 10;
 const grid = new GridHelper(gridSize, gridDivisions, 0x3b82f6, 0x1f2937);
 scene.add(grid);
 

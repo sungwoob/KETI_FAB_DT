@@ -7,7 +7,7 @@
       "equipment_info": "Contact angle measurement system for surface wettability",
       "location": {
         "zone": "B1",
-        "position": { "x": -4, "y": 0, "z": -4 }
+        "position": { "x": -8, "y": 0, "z": -8 }
       },
       "dimensions": { "length": 2.6, "width": 2.4, "height": 2.2 },
       "status": "on"
@@ -19,7 +19,7 @@
       "equipment_info": "High-precision dimensional inspection system",
       "location": {
         "zone": "B2",
-        "position": { "x": 0, "y": 0, "z": -4 }
+        "position": { "x": 0, "y": 0, "z": -8 }
       },
       "dimensions": { "length": 2.8, "width": 2.4, "height": 2.0 },
       "status": "on"
@@ -31,7 +31,7 @@
       "equipment_info": "Thermal evaporation thin-film coater",
       "location": {
         "zone": "B3",
-        "position": { "x": 4, "y": 0, "z": -4 }
+        "position": { "x": 8, "y": 0, "z": -8 }
       },
       "dimensions": { "length": 3.0, "width": 2.8, "height": 2.6 },
       "status": "off"
@@ -43,7 +43,7 @@
       "equipment_info": "Uniform heating oven for wafer/process samples",
       "location": {
         "zone": "C1",
-        "position": { "x": -4, "y": 0, "z": 0 }
+        "position": { "x": -8, "y": 0, "z": 0 }
       },
       "dimensions": { "length": 2.4, "width": 2.6, "height": 2.2 },
       "status": "on"
@@ -67,7 +67,7 @@
       "equipment_info": "Multi-chamber deposition tool",
       "location": {
         "zone": "C3",
-        "position": { "x": 4, "y": 0, "z": 0 }
+        "position": { "x": 8, "y": 0, "z": 0 }
       },
       "dimensions": { "length": 3.2, "width": 2.8, "height": 2.6 },
       "status": "off"
@@ -79,7 +79,7 @@
       "equipment_info": "Secondary chamber for deposition",
       "location": {
         "zone": "D1",
-        "position": { "x": -2, "y": 0, "z": 4 }
+        "position": { "x": -4, "y": 0, "z": 8 }
       },
       "dimensions": { "length": 3.2, "width": 2.8, "height": 2.6 },
       "status": "off"
@@ -91,7 +91,7 @@
       "equipment_info": "UV surface cleaner",
       "location": {
         "zone": "D2",
-        "position": { "x": 2, "y": 0, "z": 4 }
+        "position": { "x": 4, "y": 0, "z": 8 }
       },
       "dimensions": { "length": 2.4, "width": 2.4, "height": 2.2 },
       "status": "on"
