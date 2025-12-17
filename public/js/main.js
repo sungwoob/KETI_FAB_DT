@@ -43,7 +43,7 @@ directional.castShadow = true;
 directional.shadow.mapSize.set(2048, 2048);
 scene.add(directional);
 
-const grid = new GridHelper(1000, 1000, 0x3b82f6, 0x1f2937);
+const grid = new GridHelper(100, 100, 0x3b82f6, 0x1f2937);
 scene.add(grid);
 
 const loader = new FBXLoader();
