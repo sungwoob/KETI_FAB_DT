@@ -43,7 +43,9 @@ directional.castShadow = true;
 directional.shadow.mapSize.set(2048, 2048);
 scene.add(directional);
 
-const grid = new GridHelper(100, 100, 0x3b82f6, 0x1f2937);
+const gridSize = 10;
+const gridDivisions = 10;
+const grid = new GridHelper(gridSize, gridDivisions, 0x3b82f6, 0x1f2937);
 scene.add(grid);
 
 const loader = new FBXLoader();
@@ -180,9 +182,9 @@ async function initModels() {
   const models = await fetchModelMetadata();
 
   const columnCount = 3;
-  const spacingX = 8;
-  const spacingZ = 8;
   const rowCount = Math.ceil(models.length / columnCount);
+  const spacingX = gridSize / Math.max(columnCount, rowCount);
+  const spacingZ = gridSize / Math.max(columnCount, rowCount);
 
   if (countBadge) {
     countBadge.textContent = `FBX × ${models.length}`;
