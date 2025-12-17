@@ -87,6 +87,27 @@ h1 span {
   margin-top: 4px;
 }
 
+#model-list {
+  margin-top: 12px;
+  border-top: 1px solid rgba(148, 163, 184, 0.2);
+  padding-top: 10px;
+}
+
+#model-list h3 {
+  margin: 0 0 6px;
+  font-size: 0.95rem;
+  color: #c7d2fe;
+}
+
+#model-list ul {
+  list-style: disc;
+  padding-left: 18px;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 6px 12px;
+}
+
 a {
   color: #93c5fd;
 }
