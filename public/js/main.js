@@ -43,7 +43,7 @@ directional.castShadow = true;
 directional.shadow.mapSize.set(2048, 2048);
 scene.add(directional);
 
-const grid = new GridHelper(1000, 20, 0x3b82f6, 0x1f2937);
+const grid = new GridHelper(1000, 1000, 0x3b82f6, 0x1f2937);
 scene.add(grid);
 
 const loader = new FBXLoader();
@@ -62,7 +62,7 @@ const defaultFbxModels = [
     name: "Contact Angle Meter",
     fileName: "ContactAngleMeter_01.fbx",
     location: { gridPosition: 0 },
-    dimensions: { width: 2.6, height: 2.2, depth: 2.4 },
+    dimensions: { length: 2.6, width: 2.4, height: 2.2 },
     status: "on"
   },
   {
@@ -70,7 +70,7 @@ const defaultFbxModels = [
     name: "Coordinate Measuring Machine",
     fileName: "CoordinateMeasuringMachine_01.fbx",
     location: { gridPosition: 1 },
-    dimensions: { width: 2.8, height: 2.0, depth: 2.4 },
+    dimensions: { length: 2.8, width: 2.4, height: 2.0 },
     status: "on"
   },
   {
@@ -78,7 +78,7 @@ const defaultFbxModels = [
     name: "Evaporator",
     fileName: "Evaporator_01.fbx",
     location: { gridPosition: 2 },
-    dimensions: { width: 3.0, height: 2.6, depth: 2.8 },
+    dimensions: { length: 3.0, width: 2.8, height: 2.6 },
     status: "off"
   },
   {
@@ -86,7 +86,7 @@ const defaultFbxModels = [
     name: "Forced Convection Oven",
     fileName: "ForcedConvectionOven_01.fbx",
     location: { gridPosition: 3 },
-    dimensions: { width: 2.4, height: 2.2, depth: 2.6 },
+    dimensions: { length: 2.4, width: 2.6, height: 2.2 },
     status: "on"
   },
   {
@@ -94,7 +94,7 @@ const defaultFbxModels = [
     name: "Optical Microscope",
     fileName: "OpticalMicroscope_01.fbx",
     location: { gridPosition: 4 },
-    dimensions: { width: 2.0, height: 2.0, depth: 2.0 },
+    dimensions: { length: 2.0, width: 2.0, height: 2.0 },
     status: "on"
   },
   {
@@ -102,7 +102,7 @@ const defaultFbxModels = [
     name: "Thin Film Deposition System A",
     fileName: "ThinFilmDepositionSystem_01.fbx",
     location: { gridPosition: 5 },
-    dimensions: { width: 3.2, height: 2.6, depth: 2.8 },
+    dimensions: { length: 3.2, width: 2.8, height: 2.6 },
     status: "off"
   },
   {
@@ -110,7 +110,7 @@ const defaultFbxModels = [
     name: "Thin Film Deposition System B",
     fileName: "ThinFilmDepositionSystem_02.fbx",
     location: { gridPosition: 6 },
-    dimensions: { width: 3.2, height: 2.6, depth: 2.8 },
+    dimensions: { length: 3.2, width: 2.8, height: 2.6 },
     status: "off"
   },
   {
@@ -118,10 +118,27 @@ const defaultFbxModels = [
     name: "Ultraviolet Cleaner",
     fileName: "UltravioletCleaner_01.fbx",
     location: { gridPosition: 7 },
-    dimensions: { width: 2.4, height: 2.2, depth: 2.4 },
+    dimensions: { length: 2.4, width: 2.4, height: 2.2 },
     status: "on"
   }
 ];
+
+function normalizeDimensions(dimensions) {
+  if (!dimensions) return null;
+  const length = dimensions.length ?? dimensions.L ?? dimensions.depth ?? dimensions.width;
+  const width = dimensions.width ?? dimensions.W ?? dimensions.depth;
+  const height = dimensions.height ?? dimensions.H ?? dimensions.h;
+
+  if (
+    [length, width, height].every(
+      (value) => typeof value === "number" && Number.isFinite(value) && value > 0
+    )
+  ) {
+    return { length, width, height };
+  }
+
+  return null;
+}
 
 async function fetchModelMetadata() {
   try {
@@ -135,7 +152,7 @@ async function fetchModelMetadata() {
         name: model.name,
         fileName: model.file,
         location: model.location || { gridPosition: index },
-        dimensions: model.dimensions,
+        dimensions: normalizeDimensions(model.dimensions),
         status: model.status || "unknown"
       }));
     }
@@ -163,8 +180,8 @@ async function initModels() {
   const models = await fetchModelMetadata();
 
   const columnCount = 3;
-  const spacingX = 360;
-  const spacingZ = 340;
+  const spacingX = 8;
+  const spacingZ = 8;
   const rowCount = Math.ceil(models.length / columnCount);
 
   if (countBadge) {
@@ -193,11 +210,43 @@ async function initModels() {
           rowCount
         );
 
-    loadFBX(`${modelRootPath}${model.fileName}`, offsetX, offsetZ);
+    const offsetY = locationPosition?.y ?? 0;
+
+    loadFBX(`${modelRootPath}${model.fileName}`, {
+      position: { x: offsetX, y: offsetY, z: offsetZ },
+      dimensions: model.dimensions
+    });
   });
 }
 
-function placeModel(object, offsetX, offsetZ) {
+function computeScale(size, dimensions) {
+  if (dimensions) {
+    const { length, width, height } = dimensions;
+    const scaleX = length && size.x > 0 ? length / size.x : null;
+    const scaleZ = width && size.z > 0 ? width / size.z : null;
+    const scaleY = height && size.y > 0 ? height / size.y : null;
+
+    const fallbacks = [scaleX, scaleY, scaleZ].filter(
+      (value) => typeof value === "number" && Number.isFinite(value) && value > 0
+    );
+
+    if (fallbacks.length > 0) {
+      return {
+        x: scaleX ?? fallbacks[0],
+        y: scaleY ?? fallbacks[0],
+        z: scaleZ ?? fallbacks[0]
+      };
+    }
+  }
+
+  const targetSize = 6;
+  const maxDim = Math.max(size.x, size.y, size.z);
+  const uniformScale = maxDim > 0 ? targetSize / maxDim : 1;
+
+  return { x: uniformScale, y: uniformScale, z: uniformScale };
+}
+
+function placeModel(object, placement) {
   const animations = object.animations || [];
   const mixer = animations.length > 0 ? new AnimationMixer(object) : null;
   const defaultAction = mixer && animations[0] ? mixer.clipAction(animations[0]) : null;
@@ -238,14 +287,13 @@ function placeModel(object, offsetX, offsetZ) {
     }
   });
 
-  const box = new Box3().setFromObject(object);
-  const size = new Vector3();
-  box.getSize(size);
+  const initialBox = new Box3().setFromObject(object);
+  const rawSize = new Vector3();
+  initialBox.getSize(rawSize);
 
-  const targetSize = 260;
-  const maxDim = Math.max(size.x, size.y, size.z);
-  const scale = maxDim > 0 ? targetSize / maxDim : 1;
-  object.scale.setScalar(scale);
+  const { position, dimensions } = placement || {};
+  const scale = computeScale(rawSize, dimensions);
+  object.scale.set(scale.x, scale.y, scale.z);
 
   const centeredBox = new Box3().setFromObject(object);
   const center = new Vector3();
@@ -255,17 +303,18 @@ function placeModel(object, offsetX, offsetZ) {
   const groundedBox = new Box3().setFromObject(object);
   const minY = groundedBox.min.y;
   object.position.y -= minY;
-  object.position.x += offsetX;
-  object.position.z += offsetZ;
+  object.position.x += position?.x ?? 0;
+  object.position.y += position?.y ?? 0;
+  object.position.z += position?.z ?? 0;
 
   scene.add(object);
 }
 
-function loadFBX(path, offsetX, offsetZ) {
+function loadFBX(path, placement) {
   loader.load(
     path,
     (object) => {
-      placeModel(object, offsetX, offsetZ);
+      placeModel(object, placement);
     },
     undefined,
     (error) => {

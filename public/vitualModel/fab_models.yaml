@@ -9,7 +9,7 @@
         "zone": "B1",
         "position": { "x": -360, "y": 0, "z": -340 }
       },
-      "dimensions": { "width": 2.6, "height": 2.2, "depth": 2.4 },
+      "dimensions": { "length": 2.6, "width": 2.4, "height": 2.2 },
       "status": "on"
     },
     {
@@ -21,7 +21,7 @@
         "zone": "B2",
         "position": { "x": 0, "y": 0, "z": -340 }
       },
-      "dimensions": { "width": 2.8, "height": 2.0, "depth": 2.4 },
+      "dimensions": { "length": 2.8, "width": 2.4, "height": 2.0 },
       "status": "on"
     },
     {
@@ -33,7 +33,7 @@
         "zone": "B3",
         "position": { "x": 360, "y": 0, "z": -340 }
       },
-      "dimensions": { "width": 3.0, "height": 2.6, "depth": 2.8 },
+      "dimensions": { "length": 3.0, "width": 2.8, "height": 2.6 },
       "status": "off"
     },
     {
@@ -45,7 +45,7 @@
         "zone": "C1",
         "position": { "x": -360, "y": 0, "z": 0 }
       },
-      "dimensions": { "width": 2.4, "height": 2.2, "depth": 2.6 },
+      "dimensions": { "length": 2.4, "width": 2.6, "height": 2.2 },
       "status": "on"
     },
     {
@@ -57,7 +57,7 @@
         "zone": "C2",
         "position": { "x": 0, "y": 0, "z": 0 }
       },
-      "dimensions": { "width": 2.0, "height": 2.0, "depth": 2.0 },
+      "dimensions": { "length": 2.0, "width": 2.0, "height": 2.0 },
       "status": "on"
     },
     {
@@ -69,7 +69,7 @@
         "zone": "C3",
         "position": { "x": 360, "y": 0, "z": 0 }
       },
-      "dimensions": { "width": 3.2, "height": 2.6, "depth": 2.8 },
+      "dimensions": { "length": 3.2, "width": 2.8, "height": 2.6 },
       "status": "off"
     },
     {
@@ -81,7 +81,7 @@
         "zone": "D1",
         "position": { "x": -360, "y": 0, "z": 340 }
       },
-      "dimensions": { "width": 3.2, "height": 2.6, "depth": 2.8 },
+      "dimensions": { "length": 3.2, "width": 2.8, "height": 2.6 },
       "status": "off"
     },
     {
@@ -93,7 +93,7 @@
         "zone": "D2",
         "position": { "x": 0, "y": 0, "z": 340 }
       },
-      "dimensions": { "width": 2.4, "height": 2.2, "depth": 2.4 },
+      "dimensions": { "length": 2.4, "width": 2.4, "height": 2.2 },
       "status": "on"
     }
   ]
