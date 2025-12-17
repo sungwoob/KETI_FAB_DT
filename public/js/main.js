@@ -51,8 +51,7 @@ let hoveredMesh = null;
 
 function placeModel(object, offsetX, offsetZ) {
   // Rotate so the equipment lies flat on the grid instead of standing upright
-  object.rotation.x = -Math.PI / 2;
-  object.rotation.z = -Math.PI / 2;
+  object.rotation.set(-Math.PI / 2, 0, 0);
 
   object.traverse((child) => {
     if (child.isMesh) {
@@ -80,7 +79,7 @@ function placeModel(object, offsetX, offsetZ) {
   const size = new Vector3();
   box.getSize(size);
 
-  const targetSize = 280;
+  const targetSize = 260;
   const maxDim = Math.max(size.x, size.y, size.z);
   const scale = maxDim > 0 ? targetSize / maxDim : 1;
   object.scale.setScalar(scale);
