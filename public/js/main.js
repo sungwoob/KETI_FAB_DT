@@ -1,9 +1,12 @@
 import {
   AmbientLight,
+  AnimationMixer,
   Box3,
+  Clock,
   Color,
   DirectionalLight,
   GridHelper,
+  LoopOnce,
   PerspectiveCamera,
   Raycaster,
   Scene,
@@ -48,8 +51,22 @@ const selectableMeshes = [];
 const raycaster = new Raycaster();
 const pointer = new Vector2(1, 1);
 let hoveredMesh = null;
+const animationMixers = [];
+
+const clock = new Clock();
 
 function placeModel(object, offsetX, offsetZ) {
+  const animations = object.animations || [];
+  const mixer = animations.length > 0 ? new AnimationMixer(object) : null;
+  const defaultAction = mixer && animations[0] ? mixer.clipAction(animations[0]) : null;
+
+  if (defaultAction) {
+    defaultAction.setLoop(LoopOnce, 1);
+    defaultAction.clampWhenFinished = true;
+    defaultAction.paused = true;
+    animationMixers.push(mixer);
+  }
+
   // Rotate 90° around the Y-axis to orient the equipment correctly
   object.rotation.set(0, Math.PI / 2, 0);
 
@@ -58,6 +75,10 @@ function placeModel(object, offsetX, offsetZ) {
       child.castShadow = true;
       child.receiveShadow = true;
       selectableMeshes.push(child);
+
+      if (mixer && defaultAction) {
+        child.userData.animationAction = defaultAction;
+      }
 
       const materials = Array.isArray(child.material)
         ? child.material
@@ -215,12 +236,41 @@ window.addEventListener("resize", onResize);
 window.addEventListener("pointermove", handlePointerMove);
 window.addEventListener("pointerleave", () => setHoveredMesh(null));
 
+function playMeshAnimation(mesh) {
+  const action = mesh?.userData?.animationAction;
+  if (!action) return;
+
+  action.reset();
+  action.paused = false;
+  action.play();
+}
+
+function handleClick(event) {
+  const bounds = renderer.domElement.getBoundingClientRect();
+  pointer.x = ((event.clientX - bounds.left) / bounds.width) * 2 - 1;
+  pointer.y = -((event.clientY - bounds.top) / bounds.height) * 2 + 1;
+
+  raycaster.setFromCamera(pointer, camera);
+  const intersects = raycaster.intersectObjects(selectableMeshes, true);
+  const targetMesh = intersects[0]?.object;
+
+  if (targetMesh) {
+    playMeshAnimation(targetMesh);
+  }
+}
+
+window.addEventListener("click", handleClick);
+
 function animate() {
   requestAnimationFrame(animate);
+
+  const delta = clock.getDelta();
 
   raycaster.setFromCamera(pointer, camera);
   const intersects = raycaster.intersectObjects(selectableMeshes, true);
   setHoveredMesh(intersects[0]?.object || null);
+
+  animationMixers.forEach((mixer) => mixer.update(delta));
 
   controls.update();
   renderer.render(scene, camera);
