@@ -50,8 +50,8 @@ const pointer = new Vector2(1, 1);
 let hoveredMesh = null;
 
 function placeModel(object, offsetX, offsetZ) {
-  // Rotate so the equipment lies flat on the grid instead of standing upright
-  object.rotation.set(-Math.PI / 2, 0, 0);
+  // Rotate 90° around the Y-axis to orient the equipment correctly
+  object.rotation.set(0, Math.PI / 2, 0);
 
   object.traverse((child) => {
     if (child.isMesh) {
