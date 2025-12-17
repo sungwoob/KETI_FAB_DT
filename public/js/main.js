@@ -21,11 +21,11 @@ const container = document.getElementById("canvas-container");
 const scene = new Scene();
 scene.background = new Color("#0b1224");
 
-const gridSize = 20;
-const gridDivisions = 20;
-const gridDistanceMultiplier = 52;
-const gridHeightMultiplier = 22;
-const targetHeightMultiplier = 8;
+const gridSize = 1000;
+const gridDivisions = 1000;
+const gridDistanceMultiplier = 1.2;
+const gridHeightMultiplier = 0.6;
+const targetHeightMultiplier = 0.2;
 
 const camera = new PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 5000);
 camera.position.set(0, gridSize * gridHeightMultiplier, gridSize * gridDistanceMultiplier);
@@ -68,7 +68,7 @@ const defaultFbxModels = [
     name: "Contact Angle Meter",
     fileName: "ContactAngleMeter_01.fbx",
     location: { gridPosition: 0 },
-    dimensions: { length: 2.6, width: 2.4, height: 2.2 },
+    dimensions: { length: 260, width: 240, height: 220 },
     status: "on"
   },
   {
@@ -76,7 +76,7 @@ const defaultFbxModels = [
     name: "Coordinate Measuring Machine",
     fileName: "CoordinateMeasuringMachine_01.fbx",
     location: { gridPosition: 1 },
-    dimensions: { length: 2.8, width: 2.4, height: 2.0 },
+    dimensions: { length: 280, width: 240, height: 200 },
     status: "on"
   },
   {
@@ -84,7 +84,7 @@ const defaultFbxModels = [
     name: "Evaporator",
     fileName: "Evaporator_01.fbx",
     location: { gridPosition: 2 },
-    dimensions: { length: 3.0, width: 2.8, height: 2.6 },
+    dimensions: { length: 300, width: 280, height: 260 },
     status: "off"
   },
   {
@@ -92,7 +92,7 @@ const defaultFbxModels = [
     name: "Forced Convection Oven",
     fileName: "ForcedConvectionOven_01.fbx",
     location: { gridPosition: 3 },
-    dimensions: { length: 2.4, width: 2.6, height: 2.2 },
+    dimensions: { length: 240, width: 260, height: 220 },
     status: "on"
   },
   {
@@ -100,7 +100,7 @@ const defaultFbxModels = [
     name: "Optical Microscope",
     fileName: "OpticalMicroscope_01.fbx",
     location: { gridPosition: 4 },
-    dimensions: { length: 2.0, width: 2.0, height: 2.0 },
+    dimensions: { length: 200, width: 200, height: 200 },
     status: "on"
   },
   {
@@ -108,7 +108,7 @@ const defaultFbxModels = [
     name: "Thin Film Deposition System A",
     fileName: "ThinFilmDepositionSystem_01.fbx",
     location: { gridPosition: 5 },
-    dimensions: { length: 3.2, width: 2.8, height: 2.6 },
+    dimensions: { length: 320, width: 280, height: 260 },
     status: "off"
   },
   {
@@ -116,7 +116,7 @@ const defaultFbxModels = [
     name: "Thin Film Deposition System B",
     fileName: "ThinFilmDepositionSystem_02.fbx",
     location: { gridPosition: 6 },
-    dimensions: { length: 3.2, width: 2.8, height: 2.6 },
+    dimensions: { length: 320, width: 280, height: 260 },
     status: "off"
   },
   {
@@ -124,7 +124,7 @@ const defaultFbxModels = [
     name: "Ultraviolet Cleaner",
     fileName: "UltravioletCleaner_01.fbx",
     location: { gridPosition: 7 },
-    dimensions: { length: 2.4, width: 2.4, height: 2.2 },
+    dimensions: { length: 240, width: 240, height: 220 },
     status: "on"
   }
 ];

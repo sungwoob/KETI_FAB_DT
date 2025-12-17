@@ -7,9 +7,9 @@
       "equipment_info": "Contact angle measurement system for surface wettability",
       "location": {
         "zone": "B1",
-        "position": { "x": -8, "y": 0, "z": -8 }
+        "position": { "x": -400, "y": 0, "z": -400 }
       },
-      "dimensions": { "length": 2.6, "width": 2.4, "height": 2.2 },
+      "dimensions": { "length": 260, "width": 240, "height": 220 },
       "status": "on"
     },
     {
@@ -19,9 +19,9 @@
       "equipment_info": "High-precision dimensional inspection system",
       "location": {
         "zone": "B2",
-        "position": { "x": 0, "y": 0, "z": -8 }
+        "position": { "x": 0, "y": 0, "z": -400 }
       },
-      "dimensions": { "length": 2.8, "width": 2.4, "height": 2.0 },
+      "dimensions": { "length": 280, "width": 240, "height": 200 },
       "status": "on"
     },
     {
@@ -31,9 +31,9 @@
       "equipment_info": "Thermal evaporation thin-film coater",
       "location": {
         "zone": "B3",
-        "position": { "x": 8, "y": 0, "z": -8 }
+        "position": { "x": 400, "y": 0, "z": -400 }
       },
-      "dimensions": { "length": 3.0, "width": 2.8, "height": 2.6 },
+      "dimensions": { "length": 300, "width": 280, "height": 260 },
       "status": "off"
     },
     {
@@ -43,9 +43,9 @@
       "equipment_info": "Uniform heating oven for wafer/process samples",
       "location": {
         "zone": "C1",
-        "position": { "x": -8, "y": 0, "z": 0 }
+        "position": { "x": -400, "y": 0, "z": 0 }
       },
-      "dimensions": { "length": 2.4, "width": 2.6, "height": 2.2 },
+      "dimensions": { "length": 240, "width": 260, "height": 220 },
       "status": "on"
     },
     {
@@ -57,7 +57,7 @@
         "zone": "C2",
         "position": { "x": 0, "y": 0, "z": 0 }
       },
-      "dimensions": { "length": 2.0, "width": 2.0, "height": 2.0 },
+      "dimensions": { "length": 200, "width": 200, "height": 200 },
       "status": "on"
     },
     {
@@ -67,9 +67,9 @@
       "equipment_info": "Multi-chamber deposition tool",
       "location": {
         "zone": "C3",
-        "position": { "x": 8, "y": 0, "z": 0 }
+        "position": { "x": 400, "y": 0, "z": 0 }
       },
-      "dimensions": { "length": 3.2, "width": 2.8, "height": 2.6 },
+      "dimensions": { "length": 320, "width": 280, "height": 260 },
       "status": "off"
     },
     {
@@ -79,9 +79,9 @@
       "equipment_info": "Secondary chamber for deposition",
       "location": {
         "zone": "D1",
-        "position": { "x": -4, "y": 0, "z": 8 }
+        "position": { "x": -200, "y": 0, "z": 400 }
       },
-      "dimensions": { "length": 3.2, "width": 2.8, "height": 2.6 },
+      "dimensions": { "length": 320, "width": 280, "height": 260 },
       "status": "off"
     },
     {
@@ -91,9 +91,9 @@
       "equipment_info": "UV surface cleaner",
       "location": {
         "zone": "D2",
-        "position": { "x": 4, "y": 0, "z": 8 }
+        "position": { "x": 200, "y": 0, "z": 400 }
       },
-      "dimensions": { "length": 2.4, "width": 2.4, "height": 2.2 },
+      "dimensions": { "length": 240, "width": 240, "height": 220 },
       "status": "on"
     }
   ]
