@@ -23,7 +23,19 @@
       },
       "dimensions": { "length": 140, "width": 120, "height": 100 },
       "status": "off"
-    }
+    },
+    {
+      "asset_id": "EVAP-01",
+      "name": "Evaporator",
+      "file": "Evaporator_01.fbx",
+      "equipment_info": "Thermal evaporation thin-film coater",
+      "location": {
+        "zone": "B3",
+        "position": { "x": 400, "y": 0, "z": -400 }
+      },
+      "dimensions": { "length": 150, "width": 140, "height": 130 },
+      "status": "off"
+    },
     {
       "asset_id": "OVEN-01",
       "name": "Forced Convection Oven",
