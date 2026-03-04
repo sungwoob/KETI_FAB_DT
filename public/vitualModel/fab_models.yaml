@@ -10,7 +10,7 @@
         "position": { "x": -400, "y": 0, "z": -400 }
       },
       "dimensions": { "length": 130, "width": 120, "height": 110 },
-      "status": "on"
+      "status": "off"
     },
     {
       "asset_id": "CMM-01",
@@ -22,20 +22,8 @@
         "position": { "x": 0, "y": 0, "z": -400 }
       },
       "dimensions": { "length": 140, "width": 120, "height": 100 },
-      "status": "on"
-    },
-    {
-      "asset_id": "EVAP-01",
-      "name": "Evaporator",
-      "file": "Evaporator_01.fbx",
-      "equipment_info": "Thermal evaporation thin-film coater",
-      "location": {
-        "zone": "B3",
-        "position": { "x": 400, "y": 0, "z": -400 }
-      },
-      "dimensions": { "length": 150, "width": 140, "height": 130 },
       "status": "off"
-    },
+    }
     {
       "asset_id": "OVEN-01",
       "name": "Forced Convection Oven",
@@ -46,7 +34,7 @@
         "position": { "x": -400, "y": 0, "z": 0 }
       },
       "dimensions": { "length": 120, "width": 130, "height": 110 },
-      "status": "on"
+      "status": "off"
     },
     {
       "asset_id": "MICRO-01",
@@ -58,7 +46,7 @@
         "position": { "x": 0, "y": 0, "z": 0 }
       },
       "dimensions": { "length": 100, "width": 100, "height": 100 },
-      "status": "on"
+      "status": "off"
     },
     {
       "asset_id": "TFD-01",
@@ -94,7 +82,7 @@
         "position": { "x": 200, "y": 0, "z": 400 }
       },
       "dimensions": { "length": 120, "width": 120, "height": 110 },
-      "status": "on"
+      "status": "off"
     }
   ]
 }
