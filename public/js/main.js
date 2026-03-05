@@ -166,25 +166,36 @@ function normalizeDimensions(dimensions) {
 }
 
 async function fetchModelMetadata() {
-  try {
-    const response = await fetch("./virtualModel/fab_models.json");
-    if (!response.ok) throw new Error(`Failed to fetch metadata: ${response.status}`);
-    const parsed = await response.json();
-    if (Array.isArray(parsed?.models)) {
-      return parsed.models.map((model, index) => ({
-        assetId: model.asset_id,
-        name: model.name,
-        fileName: model.file,
-        equipmentInfo: model.equipment_info,
-        location: model.location || { gridPosition: index },
-        dimensions: normalizeDimensions(model.dimensions),
-        status: model.status || "unknown"
-      }));
+  const metadataPaths = [
+    "./virtualModel/fab_models.json",
+    "./vitualModel/fab_models.yaml",
+    "./virtualModel/fab_models.yaml"
+  ];
+
+  for (const metadataPath of metadataPaths) {
+    try {
+      const response = await fetch(metadataPath);
+      if (!response.ok) continue;
+
+      const rawText = await response.text();
+      const parsed = JSON.parse(rawText);
+      if (Array.isArray(parsed?.models)) {
+        return parsed.models.map((model, index) => ({
+          assetId: model.asset_id,
+          name: model.name,
+          fileName: model.file,
+          equipmentInfo: model.equipment_info,
+          location: model.location || { gridPosition: index },
+          dimensions: normalizeDimensions(model.dimensions),
+          status: model.status || "unknown"
+        }));
+      }
+    } catch (error) {
+      console.warn(`Metadata load failed for ${metadataPath}:`, error);
     }
-  } catch (error) {
-    console.warn("Using built-in model metadata due to error:", error);
   }
 
+  console.warn("Using built-in model metadata due to missing or invalid metadata file.");
   return defaultFbxModels;
 }
 
