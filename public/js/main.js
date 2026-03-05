@@ -167,10 +167,9 @@ function normalizeDimensions(dimensions) {
 
 async function fetchModelMetadata() {
   try {
-    const response = await fetch("./vitualModel/fab_models.yaml");
+    const response = await fetch("./virtualModel/fab_models.json");
     if (!response.ok) throw new Error(`Failed to fetch metadata: ${response.status}`);
-    const yamlText = await response.text();
-    const parsed = JSON.parse(yamlText);
+    const parsed = await response.json();
     if (Array.isArray(parsed?.models)) {
       return parsed.models.map((model, index) => ({
         assetId: model.asset_id,
